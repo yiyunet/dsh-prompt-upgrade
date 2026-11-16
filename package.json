@@ -1,7 +1,7 @@
 {
-  "name": "dsh-prompt-enhance",
-  "description": "Prompt enhancement for the dsh web GUI: rewrite the composer draft into a well-structured prompt through the harness LLM service, preview the before/after, then fill back, copy, or undo. Original draft is always preserved.",
-  "version": "0.3.4",
+  "name": "dsh-prompt-upgrade",
+  "description": "Prompt upgrade for the dsh web GUI: rewrite the composer draft into a well-structured prompt through the harness LLM service, preview the before/after, then fill back, copy, or undo. Ships its own settings panel inside the 「ANB 工具」 settings shell. Original draft is always preserved.",
+  "version": "0.4.0",
   "type": "module",
   "engines": {
     "node": "^22.19.0 || >=24.0.0"
@@ -85,16 +85,16 @@
     "dsh",
     "dsh-plugin",
     "prompt",
-    "prompt-enhancement"
+    "prompt-upgrade"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rongxingda/dsh-prompt-enhance.git"
+    "url": "git+https://github.com/yiyunet/dsh-prompt-upgrade.git"
   },
   "bugs": {
-    "url": "https://github.com/rongxingda/dsh-prompt-enhance/issues"
+    "url": "https://github.com/yiyunet/dsh-prompt-upgrade/issues"
   },
-  "homepage": "https://github.com/rongxingda/dsh-prompt-enhance#readme",
+  "homepage": "https://github.com/yiyunet/dsh-prompt-upgrade#readme",
   "scripts": {
     "build": "tsc -p . && node scripts/build.mjs",
     "watch": "node scripts/build.mjs --watch",

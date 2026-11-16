@@ -7,7 +7,7 @@ name: Publish
 #     (npm is upgraded to the latest line in its own step)
 #   * `id-token: write`, granted per job
 #   * a Trusted Publisher entry on npmjs.com naming this exact file:
-#     user `rongxingda`, repo `dsh-prompt-enhance`, workflow `publish.yml`
+#     user `yiyunet`, repo `dsh-prompt-upgrade`, workflow `publish.yml`
 # Provenance is attached automatically (public repo, public package), so no
 # `--provenance` flag is passed.
 on:
@@ -71,11 +71,11 @@ jobs:
         shell: bash
         run: |
           version="$(node -p "require('./package.json').version")"
-          if npm view "dsh-prompt-enhance@${version}" version >/dev/null 2>&1; then
-            echo "::error::dsh-prompt-enhance@${version} is already on the registry — bump the version before publishing again"
+          if npm view "dsh-prompt-upgrade@${version}" version >/dev/null 2>&1; then
+            echo "::error::dsh-prompt-upgrade@${version} is already on the registry — bump the version before publishing again"
             exit 1
           fi
-          echo "dsh-prompt-enhance@${version} is new"
+          echo "dsh-prompt-upgrade@${version} is new"
       # The three gates above are exactly what `prepublishOnly` runs, so the
       # hook is skipped rather than paying for a second build and test pass.
       - run: npm publish --ignore-scripts

@@ -1,7 +1,7 @@
 /**
- * The `prompt-enhance` client locale namespace: zh (key-set source of truth)
+ * The `prompt-upgrade` client locale namespace: zh (key-set source of truth)
  * and en dictionaries for the composer button, preview panel, and undo bar.
- * @module dsh-prompt-enhance/client/locales
+ * @module dsh-prompt-upgrade/client/locales
  */
 
 /** Simplified Chinese dictionary (the key-set source of truth). */
@@ -50,6 +50,51 @@ export const zh = {
   'error.upstream.contextWindow': '输入超出模型上下文窗口，请精简原文或更换模型。',
   'error.upstream.toolCall': '模型请求了工具调用，提示词增强只需要纯文本；请更换模型后重试。',
   'error.upstream.maxTokens': '重写结果达到输出上限（maxOutputTokens），请在设置中调大上限或精简原文后重试。',
+  'settings.unavailable': '当前部署没有向本界面提供该插件的设置项。',
+  'settings.readOnly': '当前部署把设置文档设为只读，修改不会保存。',
+  'settings.saveFailed': '保存未被接受：请检查标红的字段（宿主会再次校验并可能拒绝越界值）。',
+  'settings.save': '保存',
+  'settings.saving': '保存中…',
+  'settings.overridden': '已自定义',
+  'settings.reset': '恢复默认',
+  'settings.invalid': '这个值不被接受，请修正后再保存。',
+  'settings.group.basic': '基础',
+  'settings.group.cost': '成本与性能',
+  'settings.group.context': '模型路由与上下文',
+  'field.enabled.label': '启用提示词增强',
+  'field.enabled.hint': '关闭后隐藏输入框旁的增强按钮，并停用快捷键与全部触发方式。',
+  'field.shortcut.label': '快捷键',
+  'field.shortcut.hint': '例如 ctrl+alt+e；必须含 ctrl/alt/meta 中至少一个修饰键（shift 只能作附加）。留空表示禁用。',
+  'field.streaming.label': '增量显示',
+  'field.streaming.hint': '模型边写边在面板显示。只影响显示节奏，最终回填的正文不变。',
+  'field.contextAware.label': '上下文感知',
+  'field.contextAware.hint': '读取当前会话近期对话，用于消解指代与补全省略。无历史或历史不足时自动回退为单条增强。',
+  'field.strategyMode.label': '自定义提示词的组合方式',
+  'field.strategyMode.hint': 'replace-default：整体替换内置策略（内置的「不编造、只输出正文」等硬性约束不再保留）；extend-default：追加在内置策略之后，硬性约束继续生效。',
+  'field.systemPrompt.label': '自定义系统提示词',
+  'field.systemPrompt.hint': '留空使用内置增强策略。多行文本；如何与内置策略组合由上一项决定。',
+  'field.reasoningEffort.label': '推理预算',
+  'field.reasoningEffort.hint': 'off / low / high / inherit。改写是短而明确的任务，off 最省（同一句话实测：off 约 252 输出 token，high 约 2897）；inherit 表示不传该字段、完全跟随模型默认档。',
+  'field.temperature.label': '采样温度',
+  'field.temperature.hint': '0–1 之间的数字（可填小数）；低温改写更忠实于原意。',
+  'field.maxOutputTokens.label': '输出 token 上限',
+  'field.maxOutputTokens.hint': '单次增强的输出上限，256–32768 的整数。',
+  'field.maxInputChars.label': '输入字数上限',
+  'field.maxInputChars.hint': '超限拒绝而不截断（避免改变原意），200–200000 的整数。',
+  'field.timeoutMs.label': '超时（毫秒）',
+  'field.timeoutMs.hint': '单次增强的端到端时限，5000–600000 的整数。',
+  'field.maxConcurrent.label': '并发上限',
+  'field.maxConcurrent.hint': '同时进行的增强调用数，1–16 的整数；超出的请求返回 429。',
+  'field.rateLimitPerMinute.label': '每分钟次数上限',
+  'field.rateLimitPerMinute.hint': '滑动窗口限流，1–600 的整数；超出返回 429 并给出 Retry-After。',
+  'field.provider.label': '模型 provider（覆盖）',
+  'field.provider.hint': '留空跟随当前会话模型。一旦填写就必须与下一项「model」成对，否则保存会被拒绝。',
+  'field.model.label': '模型 model（覆盖）',
+  'field.model.hint': '留空跟随当前会话模型。一旦填写就必须与上一项「provider」成对。',
+  'field.contextMaxMessages.label': '上下文窗口（条数）',
+  'field.contextMaxMessages.hint': '最多参考最近多少条 user/assistant 轮次，0–50 的整数；0 表示不参考。',
+  'field.contextMaxChars.label': '上下文窗口（字数）',
+  'field.contextMaxChars.hint': '历史片段的字符预算，从最新一条向前装配，0–100000 的整数；0 表示不参考。',
 } as const
 
 /** Dictionary key union. */
@@ -101,17 +146,62 @@ export const en: Record<PromptEnhanceKey, string> = {
   'error.upstream.contextWindow': 'The input exceeds the model context window — shorten it or switch models.',
   'error.upstream.toolCall': 'The model requested tool calls, but prompt enhance needs plain text — switch models and retry.',
   'error.upstream.maxTokens': 'The rewrite hit the output cap (maxOutputTokens) — raise it in settings or shorten the draft.',
+  'settings.unavailable': 'This deployment does not expose this plugin\'s settings to this client.',
+  'settings.readOnly': 'This deployment stores its settings document read-only, so edits are not saved.',
+  'settings.saveFailed': 'The save was not accepted — check the fields marked invalid (the host validates again and may refuse an out-of-range value).',
+  'settings.save': 'Save',
+  'settings.saving': 'Saving…',
+  'settings.overridden': 'Overridden',
+  'settings.reset': 'Reset',
+  'settings.invalid': 'This value is not accepted — fix it before saving.',
+  'settings.group.basic': 'Basics',
+  'settings.group.cost': 'Cost and performance',
+  'settings.group.context': 'Model route and context',
+  'field.enabled.label': 'Enable prompt upgrade',
+  'field.enabled.hint': 'Off hides the composer button and disables the shortcut and every other trigger.',
+  'field.shortcut.label': 'Shortcut',
+  'field.shortcut.hint': 'For example ctrl+alt+e; it must include at least one of ctrl/alt/meta (shift may only be added). Empty disables it.',
+  'field.streaming.label': 'Stream the result',
+  'field.streaming.hint': 'Show the model output as it is written. Display only: the text finally filled back never changes.',
+  'field.contextAware.label': 'Context aware',
+  'field.contextAware.hint': 'Read the current conversation to resolve references and supply omitted context. With no history it falls back to a single-prompt enhancement.',
+  'field.strategyMode.label': 'How the custom prompt combines',
+  'field.strategyMode.hint': 'replace-default swaps the built-in strategy out entirely (its hard rules are not retained); extend-default appends the custom text after it, so those rules stay in force.',
+  'field.systemPrompt.label': 'Custom system prompt',
+  'field.systemPrompt.hint': 'Empty uses the built-in strategy. Multi-line; the mode above decides how it combines.',
+  'field.reasoningEffort.label': 'Reasoning budget',
+  'field.reasoningEffort.hint': 'off / low / high / inherit. A rewrite is short and well specified, so off is cheapest (measured on one draft: ~252 output tokens at off vs ~2897 at high); inherit sends no effort field and follows the model default.',
+  'field.temperature.label': 'Temperature',
+  'field.temperature.hint': 'A number between 0 and 1 (decimals allowed); low keeps the rewrite faithful to the original.',
+  'field.maxOutputTokens.label': 'Max output tokens',
+  'field.maxOutputTokens.hint': 'Output cap of one enhancement, an integer from 256 to 32768.',
+  'field.maxInputChars.label': 'Max input characters',
+  'field.maxInputChars.hint': 'Over-length drafts are refused, never truncated (that would change the meaning). Integer from 200 to 200000.',
+  'field.timeoutMs.label': 'Timeout (ms)',
+  'field.timeoutMs.hint': 'End-to-end deadline of one enhancement, an integer from 5000 to 600000.',
+  'field.maxConcurrent.label': 'Concurrency cap',
+  'field.maxConcurrent.hint': 'Enhancements running at once, an integer from 1 to 16; extra requests get 429.',
+  'field.rateLimitPerMinute.label': 'Cap per minute',
+  'field.rateLimitPerMinute.hint': 'Sliding-window limit, an integer from 1 to 600; extra requests get 429 with Retry-After.',
+  'field.provider.label': 'Provider override',
+  'field.provider.hint': 'Empty follows the session model. Once set it must be paired with the next field (model), or the save is refused.',
+  'field.model.label': 'Model override',
+  'field.model.hint': 'Empty follows the session model. Once set it must be paired with the previous field (provider).',
+  'field.contextMaxMessages.label': 'Context window (messages)',
+  'field.contextMaxMessages.hint': 'How many recent user/assistant turns may ground the rewrite, an integer from 0 to 50; 0 admits none.',
+  'field.contextMaxChars.label': 'Context window (characters)',
+  'field.contextMaxChars.hint': 'Character budget of the history snippet, assembled backwards from the newest turn; an integer from 0 to 100000; 0 admits none.',
 }
 
 /** Both shipped dictionaries, keyed by locale id. */
 export const dictionaries: Record<'zh', typeof zh> & Record<'en', Record<PromptEnhanceKey, string>> = { zh, en }
 
 /** Locale namespace of the browser half. */
-export const NS = 'prompt-enhance' as const
+export const NS = 'prompt-upgrade' as const
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface LocaleNamespaceMap {
-    /** The prompt-enhance button/panel copy. */
-    'prompt-enhance': PromptEnhanceKey
+    /** The prompt-upgrade button/panel copy. */
+    'prompt-upgrade': PromptEnhanceKey
   }
 }

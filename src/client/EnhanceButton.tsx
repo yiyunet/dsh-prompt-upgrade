@@ -6,7 +6,7 @@
  * result remembers the original on the undo stack before setDraft, so one
  * click restores it. The button never blocks the composer: on any failure
  * the draft stays exactly as the user typed it.
- * @module dsh-prompt-enhance/client/EnhanceButton
+ * @module dsh-prompt-upgrade/client/EnhanceButton
  */
 
 import { useCallback, useEffect, useRef, useSyncExternalStore, type ReactNode } from 'react'
@@ -23,7 +23,7 @@ import { getClientSettings, subscribeClientSettings } from './settings'
 import { useSessionKey, serverSessionId } from './session-key'
 
 /** Props of the input.right entry: the InputZone owner share + session kit + locale seat. */
-export type EnhanceButtonProps = PropsRuntime<'conversation.input.right'> & PropsLocale<'prompt-enhance'>
+export type EnhanceButtonProps = PropsRuntime<'conversation.input.right'> & PropsLocale<'prompt-upgrade'>
 
 /**
  * Read the length of an optional array-shaped field out of the host's input

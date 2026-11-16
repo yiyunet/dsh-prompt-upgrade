@@ -3,7 +3,7 @@
  * enhanced result, with 回填 / 复制 / 取消 in the result phase, a cancellable
  * spinner in the loading phase, and a retryable error message otherwise.
  * Rendered through a portal into document.body by the button component.
- * @module dsh-prompt-enhance/client/ResultPanel
+ * @module dsh-prompt-upgrade/client/ResultPanel
  */
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
@@ -15,7 +15,7 @@ import type { PanelState } from './ui-state'
 /** Props of the preview panel. */
 export interface ResultPanelProps {
   state: PanelState
-  t: TranslateNS<'prompt-enhance'>
+  t: TranslateNS<'prompt-upgrade'>
   /** Fill the enhanced text back into the composer (the button owns setDraft). */
   onApply: () => void
   /** Close without touching the composer (also aborts an in-flight call). */

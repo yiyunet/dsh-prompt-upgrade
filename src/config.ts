@@ -2,13 +2,13 @@
  * Plugin configuration: one schemastery schema rendered automatically by
  * Settings → 插件配置, plus pure resolution/validation shared by the host
  * route, the slash command, and (mirrored defaults) the browser half.
- * @module dsh-prompt-enhance/config
+ * @module dsh-prompt-upgrade/config
  */
 
 import z from '@deepseek-ai/schemastery'
 
 /** Settings namespace of the plugin section. */
-export const PROMPT_ENHANCE_NAMESPACE = 'prompt-enhance'
+export const PROMPT_ENHANCE_NAMESPACE = 'prompt-upgrade'
 
 /** How a non-empty `systemPrompt` combines with the built-in strategy. */
 export type StrategyMode = 'replace-default' | 'extend-default'
@@ -180,21 +180,21 @@ function resolveReasoningEffort(value: unknown): ReasoningEffortChoice {
  * @throws Error describing the first violated invariant.
  */
 export function resolveConfig(config: Config): Config {
-  if (config === null || typeof config !== 'object') throw new Error('prompt-enhance: configuration is required')
-  if (typeof config.enabled !== 'boolean') throw new Error('prompt-enhance: enabled 必须是布尔值')
+  if (config === null || typeof config !== 'object') throw new Error('prompt-upgrade: configuration is required')
+  if (typeof config.enabled !== 'boolean') throw new Error('prompt-upgrade: enabled 必须是布尔值')
   const hasProvider = config.provider !== undefined && config.provider !== ''
   const hasModel = config.model !== undefined && config.model !== ''
   if (hasProvider !== hasModel) {
-    throw new Error('prompt-enhance: provider 与 model 必须成对填写（要么都填，要么都留空以跟随当前会话模型）')
+    throw new Error('prompt-upgrade: provider 与 model 必须成对填写（要么都填，要么都留空以跟随当前会话模型）')
   }
   const provider = hasProvider ? (config.provider ?? '').trim() : config.provider
   const model = hasModel ? (config.model ?? '').trim() : config.model
   if ((hasProvider && provider === '') || (hasModel && model === '')) {
-    throw new Error('prompt-enhance: provider/model 覆盖必须是非空字符串')
+    throw new Error('prompt-upgrade: provider/model 覆盖必须是非空字符串')
   }
   const temperature = config.temperature
   if (typeof temperature !== 'number' || !Number.isFinite(temperature) || temperature < 0 || temperature > 1) {
-    throw new Error('prompt-enhance: temperature 必须是 0–1 之间的有限数字')
+    throw new Error('prompt-upgrade: temperature 必须是 0–1 之间的有限数字')
   }
   // Whitespace-only is "absent", not "set": the explicit pair is definitionally
   // non-empty, so a blank override strips away as `undefined` rather than
@@ -206,7 +206,7 @@ export function resolveConfig(config: Config): Config {
   }
   const intInRange = (value: unknown, name: string, min: number, max: number): number => {
     if (typeof value !== 'number' || !Number.isInteger(value) || value < min || value > max) {
-      throw new Error(`prompt-enhance: ${name} 必须是 ${min}–${max} 之间的整数`)
+      throw new Error(`prompt-upgrade: ${name} 必须是 ${min}–${max} 之间的整数`)
     }
     return value
   }

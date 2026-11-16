@@ -1,11 +1,11 @@
 /**
- * Host half of the prompt-enhance plugin: the `prompt-enhance` settings
- * section, the POST /prompt-enhance/enhance route (LLM call through
+ * Host half of the prompt-upgrade plugin: the `prompt-upgrade` settings
+ * section, the POST /prompt-upgrade/enhance route (LLM call through
  * ctx.llm, route resolved by precedence: settings pair → session request
  * header → harness default model), and the /enhance slash command. The
  * browser half (exports "./client") contributes the composer button, the
  * preview panel, and the undo bar.
- * @module dsh-prompt-enhance
+ * @module dsh-prompt-upgrade
  */
 
 import type { Context } from '@deepseek-ai/cordis'
@@ -15,7 +15,7 @@ import { PROMPT_ENHANCE_ROW_IDS } from './shared/protocol'
 import { registerEnhanceRoute } from './enhance-routes'
 import { registerEnhanceCommand } from './enhance-command'
 
-export const name = 'prompt-enhance'
+export const name = 'prompt-upgrade'
 /**
  * Only the model service is a hard requirement. `webServer` used to be listed
  * here too, which made the whole entry — including the `/enhance` slash

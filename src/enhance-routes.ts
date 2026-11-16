@@ -1,9 +1,9 @@
 /**
- * The POST /prompt-enhance/enhance host route: the browser half's single
+ * The POST /prompt-upgrade/enhance host route: the browser half's single
  * seam. Loopback-fenced, body-capped, per-request config re-read (settings
  * changes land on the very next call), route resolved by precedence
  * (settings pair → session request header → harness default model).
- * @module dsh-prompt-enhance/enhance-routes
+ * @module dsh-prompt-upgrade/enhance-routes
  */
 
 import type { IncomingMessage, ServerResponse } from 'node:http'
@@ -84,7 +84,7 @@ async function serveEnhance(ctx: Context, readConfig: () => Config, gate: Admiss
   } catch (error) {
     // resolveConfig fails loud on an invalid section — surface it instead of
     // letting the rejection escape the handler.
-    writeJson(res, 500, { ok: false, error: { code: 'internal', message: `prompt-enhance 配置无效：${error instanceof Error ? error.message : String(error)}` } })
+    writeJson(res, 500, { ok: false, error: { code: 'internal', message: `prompt-upgrade 配置无效：${error instanceof Error ? error.message : String(error)}` } })
     return
   }
   // Fail before reading the body when the plugin is switched off.
@@ -308,7 +308,7 @@ interface RouteMount {
 const mounts = new WeakMap<Context, RouteMount>()
 
 /**
- * Register the /prompt-enhance prefix route on the shared webserver.
+ * Register the /prompt-upgrade prefix route on the shared webserver.
  *
  * Two lifetime rules, both learned the hard way:
  *
@@ -372,6 +372,6 @@ export function registerEnhanceRoute(ctx: Context, readConfig: () => Config): vo
           // Already torn down with the old service.
         }
       }
-    }, 'prompt-enhance: enhance route')
+    }, 'prompt-upgrade: enhance route')
   })
 }

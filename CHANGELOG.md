@@ -2,6 +2,20 @@
 
 All notable changes are documented here. Versions follow [npm](https://www.npmjs.com/package/dsh-prompt-enhance); releases from **0.2.3** onward also have a [GitHub Release](https://github.com/rongxingda/dsh-prompt-enhance/releases) page with notes (0.2.0–0.2.2 are tagged but have no Release page — see this file for their notes).
 
+## 0.4.0 (2026-11-17)
+
+Fork of upstream `dsh-prompt-enhance` 0.3.4, renamed to `dsh-prompt-upgrade`, with the settings panel it never had.
+
+**Why a panel at all.** Upstream declares an 18-field schemastery section and reads it live on every request, but ships no UI for it. DSH 0.2.x removed the 「Settings → Plugin configuration」 page that used to render such sections, so the section had no surface at all: every value had to be hand-edited in the profile patch file, and the client half mirrored only 4 of the 18 fields. This release adds the missing surface.
+
+**Adds the panel.** It registers into the 「ANB 工具」 settings shell (`anb.tool.tab`) rather than as a `settings.section` of its own, so the settings area keeps a single entry point. All 18 fields, in three groups. Out-of-range, non-integer, unknown-enum and non-boolean drafts are marked invalid and block the save, instead of being written and refused by the host with no marker on the field.
+
+**Rename.** Package name, settings namespace (`prompt-upgrade`), route prefix, both slot ids and the roster row id move together. The two `includes('prompt-enhance')` probes are rewritten to the new form rather than deleted: they exist to catch an aggregate bundle renaming the row, and that risk survives the rename.
+
+**What stays on the host.** Persistence, the revision fence and write-back recovery remain `configForms.get(ns).mutate`; only the staging layer (~120 lines) is local. The official `SettingsFormModel` was rejected because `@deepseek-ai/dsh-client-ui-primitives` ships a lib build with CSS-module imports and an undeclared dependency tree (`clsx`, `@deepseek-ai/dsh-util-workspace-path`).
+
+**Verification.** `typecheck` 0, **270/270** tests (14 new in `tests/client-settings-form.test.ts` pinning staging, invalid-blocking, save semantics and the override-presence rule), `build` 0, ANB shell gate green (6/6 shells byte-identical).
+
 ## 0.3.4 (2026-11-03)
 
 Two changes that make the plugin cheaper and less likely to refuse an ordinary draft, plus the `0.2.1-rc.5` adaptation that shipped as `0.3.3` and never reached npm (it changed no production file, so there was nothing to publish on its own). Both feature halves arrived as outside pull requests — `#8` and the first commit of `#10` — and are landed with their authors' commits intact.

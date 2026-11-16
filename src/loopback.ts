@@ -3,7 +3,7 @@
  * the draft to a configured model provider, so untrusted callers must be
  * turned away regardless of method or content-type (same fence policy as
  * the describe-image route family).
- * @module dsh-prompt-enhance/loopback
+ * @module dsh-prompt-upgrade/loopback
  */
 
 import type { IncomingMessage } from 'node:http'

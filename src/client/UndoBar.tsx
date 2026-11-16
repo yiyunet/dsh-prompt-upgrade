@@ -4,7 +4,7 @@
  * restore of the original draft. It hides itself once the draft diverges
  * from the applied text (the user kept typing) — the entry is dropped, so
  * the bar can never restore stale text over newer edits.
- * @module dsh-prompt-enhance/client/UndoBar
+ * @module dsh-prompt-upgrade/client/UndoBar
  */
 
 import { useEffect, useSyncExternalStore, type ReactNode } from 'react'
@@ -14,7 +14,7 @@ import * as ui from './ui-state'
 import { useSessionKey } from './session-key'
 
 /** Props of the input.dock entry: the InputZone owner share + session kit + locale seat. */
-export type UndoBarProps = PropsRuntime<'conversation.input.dock'> & PropsLocale<'prompt-enhance'>
+export type UndoBarProps = PropsRuntime<'conversation.input.dock'> & PropsLocale<'prompt-upgrade'>
 
 /** One session's undo affordance. */
 export function UndoBar(props: UndoBarProps): ReactNode {

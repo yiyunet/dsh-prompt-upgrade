@@ -4,10 +4,10 @@
  * free inside the web shell. Colors are declared as panel-scoped variables
  * with a dark default and a light `prefers-color-scheme` override, so the
  * panel follows the OS/shell theme without depending on host theme internals.
- * @module dsh-prompt-enhance/client/styles
+ * @module dsh-prompt-upgrade/client/styles
  */
 
-const STYLE_ID = 'dsh-prompt-enhance-styles'
+const STYLE_ID = 'dsh-prompt-upgrade-styles'
 
 /** The plugin's stylesheet. */
 export const CSS = `
@@ -200,6 +200,148 @@ export const CSS = `
   cursor: pointer; padding: 0 4px; font-size: 12px;
 }
 .dsh-pe-undo-x:hover { opacity: 1; }
+
+/* ── 设置面板（设置 → ANB 工具 → 提示词升级）─────────────────────────────
+   面板渲染在设置页里，不在 .dsh-pe-panel 内部，所以拿不到那套 --pe-* 变量；
+   这里一律用中性灰 + color: inherit，深浅两套主题下都可读。 */
+.dsh-pe-group {
+  margin: 0 0 12px;
+  padding: 10px 12px 12px;
+  border: 1px solid rgba(127, 127, 127, 0.35);
+  border-radius: 8px;
+}
+.dsh-pe-legend {
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+.dsh-pe-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 0;
+}
+.dsh-pe-row + .dsh-pe-row {
+  border-top: 1px solid rgba(127, 127, 127, 0.25);
+}
+.dsh-pe-row-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dsh-pe-row-label {
+  font-size: 12px;
+  font-weight: 500;
+}
+.dsh-pe-row-hint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  opacity: 0.62;
+}
+.dsh-pe-row-invalid {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #d9534f;
+}
+.dsh-pe-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+.dsh-pe-badge-tag {
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(127, 127, 127, 0.18);
+  font-size: 10px;
+  opacity: 0.85;
+}
+.dsh-pe-badge-reset {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 11px;
+  text-decoration: underline;
+  cursor: pointer;
+  opacity: 0.7;
+}
+.dsh-pe-badge-reset:hover:not(:disabled) { opacity: 1; }
+.dsh-pe-badge-reset:disabled { opacity: 0.4; cursor: default; }
+.dsh-pe-checkbox {
+  width: 16px;
+  height: 16px;
+  align-self: flex-start;
+  cursor: pointer;
+}
+.dsh-pe-checkbox:disabled { cursor: default; }
+.dsh-pe-textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid rgba(127, 127, 127, 0.35);
+  border-radius: 6px;
+  background: rgba(127, 127, 127, 0.1);
+  color: inherit;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+  resize: vertical;
+}
+.dsh-pe-textarea:disabled { opacity: 0.6; }
+.dsh-pe-form { display: flex; flex-direction: column; }
+.dsh-pe-input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid rgba(127, 127, 127, 0.35);
+  border-radius: 6px;
+  background: rgba(127, 127, 127, 0.1);
+  color: inherit;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.dsh-pe-input:disabled { opacity: 0.6; }
+.dsh-pe-input[aria-invalid='true'] { border-color: #d9534f; }
+.dsh-pe-textarea[aria-invalid='true'] { border-color: #d9534f; }
+.dsh-pe-notice {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(127, 127, 127, 0.3);
+  border-radius: 6px;
+  background: rgba(127, 127, 127, 0.08);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.dsh-pe-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 4px;
+}
+.dsh-pe-save-failed {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #d9534f;
+}
+.dsh-pe-save {
+  margin-left: auto;
+  padding: 5px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #3f76e1;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.dsh-pe-save:hover:not(:disabled) { background: #4d82ec; }
+.dsh-pe-save:disabled { opacity: 0.45; cursor: default; }
 `
 
 /**

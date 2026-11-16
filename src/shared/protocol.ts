@@ -2,11 +2,11 @@
  * Wire contract shared by the host route and the browser half: one enhance
  * POST and its typed responses. Pure types and constants only, safe to
  * bundle into both halves.
- * @module dsh-prompt-enhance/shared/protocol
+ * @module dsh-prompt-upgrade/shared/protocol
  */
 
 /** Host route path the browser half POSTs the draft to. */
-export const ENHANCE_ENDPOINT = '/prompt-enhance/enhance'
+export const ENHANCE_ENDPOINT = '/prompt-upgrade/enhance'
 
 /**
  * Mount prefix of the plugin's host routes. The webserver registration uses it
@@ -14,29 +14,29 @@ export const ENHANCE_ENDPOINT = '/prompt-enhance/enhance'
  * `replace(/\/enhance$/, '')`, which would silently mount the WRONG path the
  * day the endpoint constant is renamed.
  */
-export const ENHANCE_PREFIX = '/prompt-enhance'
+export const ENHANCE_PREFIX = '/prompt-upgrade'
 
 /**
  * Host route path of the incremental variant: same request body, but the
  * response is an SSE stream of {@link EnhanceStreamEvent} frames so the panel
  * can show the rewrite while it is being written.
  */
-export const ENHANCE_STREAM_ENDPOINT = '/prompt-enhance/enhance-stream'
+export const ENHANCE_STREAM_ENDPOINT = '/prompt-upgrade/enhance-stream'
 
 /**
  * Profile entry ids the plugin's settings section may be served under.
  *
  * The bare package name is what {@link PROMPT_ENHANCE_NAMESPACE} inserts, but
- * an aggregate bundle renames child rows (`prompt-enhance` becomes
- * `web-ui-prompt-enhance`), and the dsh 0.2.x settings service addresses rows
+ * an aggregate bundle renames child rows (`prompt-upgrade` becomes
+ * `web-ui-prompt-upgrade`), and the dsh 0.2.x settings service addresses rows
  * by that id rather than by namespace. Both halves probe the same list in the
  * same order, so the host section and the browser mirror can never resolve to
  * two different documents.
  */
 export const PROMPT_ENHANCE_ROW_IDS: readonly string[] = [
-  'prompt-enhance',
-  'dsh-prompt-enhance',
-  'web-ui-prompt-enhance',
+  'prompt-upgrade',
+  'dsh-prompt-upgrade',
+  'web-ui-prompt-upgrade',
 ]
 
 /** Request body of one enhance call. */

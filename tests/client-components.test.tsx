@@ -60,7 +60,7 @@ const t = ((key: string, params?: Record<string, unknown>): string => {
   let s = (zh as Record<string, string>)[key] ?? key
   for (const [name, value] of Object.entries(params ?? {})) s = s.split(`{${name}}`).join(String(value))
   return s
-}) as TranslateNS<'prompt-enhance'>
+}) as TranslateNS<'prompt-upgrade'>
 
 /** Minimal fake of the per-session input machine store: synchronous, like the real one. */
 function makeFakeInput(initial: Partial<InputState> & { draft: string }) {

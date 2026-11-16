@@ -1,12 +1,12 @@
 # Contributing
 
-Thanks for helping improve dsh-prompt-enhance! This is a [DeepSeek Harness](https://github.com/deepseek-ai) web plugin: one npm package with a Node (host) half and a browser half.
+Thanks for helping improve dsh-prompt-upgrade! This is a [DeepSeek Harness](https://github.com/deepseek-ai) web plugin: one npm package with a Node (host) half and a browser half.
 
 ## Setup
 
 ```bash
-git clone https://github.com/rongxingda/dsh-prompt-enhance.git
-cd dsh-prompt-enhance
+git clone https://github.com/yiyunet/dsh-prompt-upgrade.git
+cd dsh-prompt-upgrade
 npm install
 npm test          # unit + real-http + component suites
 npm run typecheck
@@ -16,14 +16,14 @@ npm run build     # tsc + esbuild → lib/index.js (host ESM) + lib/client.js (b
 ## Local debug loop
 
 ```bash
-dsh plugin --profile web add link:C:\path\to\dsh-prompt-enhance   # once
+dsh plugin --profile web add link:C:\path\to\dsh-prompt-upgrade   # once
 npm run watch                                                     # keep rebuilding both halves
 # restart `dsh web` after changing host-half code; browser-half changes
 # need a page reload (and a rebuild first)
 ```
 
 When you're done, switch back to the npm install for daily use:
-`dsh plugin --profile web add dsh-prompt-enhance`.
+`dsh plugin --profile web add dsh-prompt-upgrade`.
 
 ## Ground rules
 

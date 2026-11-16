@@ -1,8 +1,21 @@
-# dsh-prompt-enhance
+# dsh-prompt-upgrade
 
-[![CI](https://github.com/rongxingda/dsh-prompt-enhance/actions/workflows/ci.yml/badge.svg)](https://github.com/rongxingda/dsh-prompt-enhance/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/dsh-prompt-enhance)](https://www.npmjs.com/package/dsh-prompt-enhance)
+[![CI](https://github.com/yiyunet/dsh-prompt-upgrade/actions/workflows/ci.yml/badge.svg)](https://github.com/yiyunet/dsh-prompt-upgrade/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue)](./LICENSE)
+
+> **Not an official plugin.** Forked from [`rongxingda/dsh-prompt-enhance`](https://github.com/rongxingda/dsh-prompt-enhance) v0.3.4
+> (Apache-2.0) by the technology department and renamed. The material change is the **settings panel**:
+> upstream 0.3.x declares a schemastery section but ships no UI for it, and DSH 0.2.x removed the
+> 「Settings → Plugin configuration」 page that used to render such sections — so those settings had no
+> surface at all and every edit had to go through the profile patch file. This fork registers a panel
+> inside the 「ANB 工具」 settings shell (`anb.tool.tab`) and leaves persistence on the harness contract
+> (`configForms.get(ns).mutate`), so revision fencing, write-back recovery and the stored document stay
+> the host's business.
+>
+> Reported issues belong to the upstream repository; the panel is this fork's change.
+> No npm badge: this package is not published.
+> **The Chinese README is the primary document for this fork** — it carries the install steps, the
+> panel location, and the 18 settings.
 
 **Prompt enhancement for the [DeepSeek Harness](https://github.com/deepseek-ai) web GUI** — one click turns a rough composer draft into a well-structured prompt: explicit role and goal, executable steps, output format, acceptance criteria, and edge cases. Your intent is never changed, nothing is fabricated, and the original draft is always preserved.
 
@@ -28,14 +41,14 @@ Good agent prompts state *who the model should be*, *what to deliver*, *in what 
 | ⚙️ **Live settings** | Every knob (model override, temperature, budgets, system prompt, shortcut) hot-applies from Settings → 插件配置 |
 | 🛡️ **Draft safety** | Empty, over-length, images-only, and command-chip inputs are rejected locally; upstream failures are mapped to readable messages; the draft is never mutated on failure |
 
-![The preview panel running in dsh web: original and enhanced prompt side by side with model info, fill-back and copy actions](https://raw.githubusercontent.com/rongxingda/dsh-prompt-enhance/main/docs/evidence-prompt-enhance-panel.png)
+![The preview panel running in dsh web: original and enhanced prompt side by side with model info, fill-back and copy actions](https://raw.githubusercontent.com/yiyunet/dsh-prompt-upgrade/main/docs/evidence-prompt-upgrade-panel.png)
 
 ## How it works
 
 ```mermaid
 flowchart LR
     A[Composer draft] --> B{Local guards<br/>empty / length / chips / busy}
-    B -- pass --> C["POST /prompt-enhance/enhance<br/>(loopback-fenced host route)"]
+    B -- pass --> C["POST /prompt-upgrade/enhance<br/>(loopback-fenced host route)"]
     B -- reject --> P[Preview panel:<br/>readable error, draft untouched]
     C --> D["ctx.llm.stream<br/>rewrite with system strategy"]
     D --> E[Normalize:<br/>strip fences, trim, refuse empty]
@@ -47,13 +60,13 @@ flowchart LR
 
 The plugin is one npm package with two halves, following the dsh plugin conventions:
 
-- **Host half** (`exports "."`, Node): declares the `prompt-enhance` settings schema (schemastery, every field marked `.volatile()` — the host's `describe()` **drops any entry with no volatile field**, so that mark is both what makes the config page appear and the contract for "edits apply to the next request"; the plugin **re-reads it on every request** instead of caching the boot snapshot), registers the `POST /prompt-enhance/enhance` route on the shared webserver (loopback-fenced, body-capped), and the `/enhance` slash command. The model call goes through `ctx.llm.stream` with a normalized output pass — the same auxiliary-call discipline the harness applies to session titles: deadline + caller cancellation rechecked during and after the stream, terminal-finish validation, tool-call rejection.
+- **Host half** (`exports "."`, Node): declares the `prompt-upgrade` settings schema (schemastery, every field marked `.volatile()` — the host's `describe()` **drops any entry with no volatile field**, so that mark is both what makes the config page appear and the contract for "edits apply to the next request"; the plugin **re-reads it on every request** instead of caching the boot snapshot), registers the `POST /prompt-upgrade/enhance` route on the shared webserver (loopback-fenced, body-capped), and the `/enhance` slash command. The model call goes through `ctx.llm.stream` with a normalized output pass — the same auxiliary-call discipline the harness applies to session titles: deadline + caller cancellation rechecked during and after the stream, terminal-finish validation, tool-call rejection.
 - **Browser half** (`exports "./client"`): registers the enhance button into the `conversation.input.right` slot and the undo bar into `conversation.input.dock`, binds a live mirror of the settings namespace, and installs the global shortcut. All copy is localized (zh/en) through the harness locale system.
 
 ## Requirements
 
 - `dsh >= 0.1.1-rc.2 < 0.3.0` — the range states what has actually been exercised, not an open-ended promise.
-- Boot-verified on `0.1.1-rc.2`, `0.1.2-alpha.3`, `0.1.7-rc.2`, `0.2.0-rc.2`, `0.2.1-rc.2`, and **`0.2.1-rc.5`** (layer mounts, enhance route answers, client bundle builds; on alpha the plugin takes the newer `ctx.settings.installSection` registration path, and on `0.2.0-rc.2` it also passes the runtime's plugin-compatibility gate). `0.2.1-rc.5` was checked by diffing every `@deepseek-ai/dsh-*` package the plugin builds against: apart from `dsh-client-ui-conversation`, whose `lib/` gained a View-tabs More menu and a `whenDraftExists` option on draft initialization, the published trees are **byte-identical** to `0.2.1-rc.2`, and none of the additions touch a contract this plugin uses. On a temporary profile at `rc.5` the plugin composed into the loader tree, `/prompt-enhance/enhance` answered with a real model result, `/enhance-stream` emitted live SSE deltas, and the host's own schema dump showed the entry as `config100` with **every field carrying `x-cordis.volatile`** — 16 of 16 on that run, 17 of 17 once `reasoningEffort` landed — the exact condition `SettingsForms.describe()` checks before it renders a page. The `0.2.1-rc.2` check is a **real-host end-to-end smoke**: with the local build installed into a temporary profile, the enhance route returned a real model result; setting that profile's `maxInputChars` to `300` made a 400-character draft fail with `422 {count: 400, max: 300}`, and after editing the same profile to `20000` — **without restarting** — the identical draft went through, so a settings edit reaches the *next* request instead of staying at the boot-time snapshot. The `0.2.0-rc.2` checks include the **dsh desktop application** — the environment this plugin is normally used in. On a `0.2.x` runtime expect some *other* plugins to disappear from the UI: the gate skips any bundle whose `peerDependencies` pin an older `@deepseek-ai/dsh-*` range (observed: `dshmarket`, `dsh-find-plugin`, `dsh-better-sidebar`). The harness has broken several of the APIs this plugin touches: `@deepseek-ai/dsh-settings` changed its registration entry between the two early lines, from `0.1.5-rc.3` the settings service became `SettingsForms` (no synchronous `get`), and `0.2.x` **deleted the `installSettingsSection` / `settingsNamespace` exports outright**; `dsh-agent-default-model` moved the harness default model behind its own `ctx.agentDefaultModel.currentSelection()` service; and the browser-side settings mirror moved from `ctx.settingsScope` to `ctx.configForms`. The plugin probes every generation at runtime and adapts, no configuration needed.
+- Boot-verified on `0.1.1-rc.2`, `0.1.2-alpha.3`, `0.1.7-rc.2`, `0.2.0-rc.2`, `0.2.1-rc.2`, and **`0.2.1-rc.5`** (layer mounts, enhance route answers, client bundle builds; on alpha the plugin takes the newer `ctx.settings.installSection` registration path, and on `0.2.0-rc.2` it also passes the runtime's plugin-compatibility gate). `0.2.1-rc.5` was checked by diffing every `@deepseek-ai/dsh-*` package the plugin builds against: apart from `dsh-client-ui-conversation`, whose `lib/` gained a View-tabs More menu and a `whenDraftExists` option on draft initialization, the published trees are **byte-identical** to `0.2.1-rc.2`, and none of the additions touch a contract this plugin uses. On a temporary profile at `rc.5` the plugin composed into the loader tree, `/prompt-upgrade/enhance` answered with a real model result, `/enhance-stream` emitted live SSE deltas, and the host's own schema dump showed the entry as `config100` with **every field carrying `x-cordis.volatile`** — 16 of 16 on that run, 17 of 17 once `reasoningEffort` landed — the exact condition `SettingsForms.describe()` checks before it renders a page. The `0.2.1-rc.2` check is a **real-host end-to-end smoke**: with the local build installed into a temporary profile, the enhance route returned a real model result; setting that profile's `maxInputChars` to `300` made a 400-character draft fail with `422 {count: 400, max: 300}`, and after editing the same profile to `20000` — **without restarting** — the identical draft went through, so a settings edit reaches the *next* request instead of staying at the boot-time snapshot. The `0.2.0-rc.2` checks include the **dsh desktop application** — the environment this plugin is normally used in. On a `0.2.x` runtime expect some *other* plugins to disappear from the UI: the gate skips any bundle whose `peerDependencies` pin an older `@deepseek-ai/dsh-*` range (observed: `dshmarket`, `dsh-find-plugin`, `dsh-better-sidebar`). The harness has broken several of the APIs this plugin touches: `@deepseek-ai/dsh-settings` changed its registration entry between the two early lines, from `0.1.5-rc.3` the settings service became `SettingsForms` (no synchronous `get`), and `0.2.x` **deleted the `installSettingsSection` / `settingsNamespace` exports outright**; `dsh-agent-default-model` moved the harness default model behind its own `ctx.agentDefaultModel.currentSelection()` service; and the browser-side settings mirror moved from `ctx.settingsScope` to `ctx.configForms`. The plugin probes every generation at runtime and adapts, no configuration needed.
 - The ceiling covers the whole `0.2.x` line (including its prereleases); a `0.3.x` is untested and therefore outside the range. `dsh.engines` **is enforced**: the host's boot preflight marks a mismatched entry `disabled = true`, and only an explicit `--accept-risk` gets past the throw (`Incompatible plugins may cause crashes or data loss`). A wrong range means the plugin does not load — not that it loads with a warning.
 - Node `^22.19.0 || >=24.0.0` (for building from source)
 - Browser peers `react` / `react-dom` (`^18.2.0`) come from the web shell's module registry. The host-half module `@deepseek-ai/dsh-llm` is a **runtime module supplied by the dsh host and is not installed from npm** (the `lib/` bundles keep every package import external), so it is declared as an *optional* peer: an install that does not provide it produces no warning, and the plugin reports a normal error at enhance time rather than failing to load.
@@ -69,30 +82,30 @@ The plugin is one npm package with two halves, following the dsh plugin conventi
 From npm (recommended):
 
 ```bash
-dsh plugin --profile web add dsh-prompt-enhance
+dsh plugin --profile web add dsh-prompt-upgrade
 # restart dsh web
 ```
 
 From GitHub (the built `lib/` is committed, so no local build happens):
 
 ```bash
-dsh plugin --profile web add github:rongxingda/dsh-prompt-enhance
+dsh plugin --profile web add github:yiyunet/dsh-prompt-upgrade
 ```
 
 From a local checkout (for development — changes rebuild + restart take effect):
 
 ```bash
-git clone https://github.com/rongxingda/dsh-prompt-enhance.git
-cd dsh-prompt-enhance && npm install && npm run build
-dsh plugin --profile web add link:C:\path\to\dsh-prompt-enhance
+git clone https://github.com/yiyunet/dsh-prompt-upgrade.git
+cd dsh-prompt-upgrade && npm install && npm run build
+dsh plugin --profile web add link:C:\path\to\dsh-prompt-upgrade
 ```
 
 Uninstall:
 
 ```bash
-dsh plugin --profile web remove dsh-prompt-enhance
+dsh plugin --profile web remove dsh-prompt-upgrade
 # check the profile's package.json `dsh.profile.bundles` array for a leftover
-# "dsh-prompt-enhance" row and remove it if present, then restart dsh web
+# "dsh-prompt-upgrade" row and remove it if present, then restart dsh web
 ```
 
 ## Usage
@@ -110,7 +123,7 @@ dsh plugin --profile web remove dsh-prompt-enhance
 
 ## Configuration
 
-Everything lives in the `prompt-enhance` settings namespace, edited from the web GUI's **Settings → 插件配置** page. Changes apply to the very next call — no restart. Every enhancement is one billable LLM call: `reasoningEffort` and `maxOutputTokens` bound how many tokens it spends, and the host-side concurrency/rate caps bound how often calls can be made.
+Everything lives in the `prompt-upgrade` settings namespace, edited from the web GUI's **Settings → 插件配置** page. Changes apply to the very next call — no restart. Every enhancement is one billable LLM call: `reasoningEffort` and `maxOutputTokens` bound how many tokens it spends, and the host-side concurrency/rate caps bound how often calls can be made.
 
 | Field | Default | Description |
 |---|---|---|
@@ -187,7 +200,7 @@ The host route answers structured errors of the shape `{ code, message?, params?
 ## Troubleshooting
 
 **Button missing / shortcut dead**
-Settings → 插件配置 → `prompt-enhance` section: is `enabled` true? Is the plugin installed (`dsh plugin --profile web list`) and `dsh web` restarted? Any apply error in the browser console?
+Settings → 插件配置 → `prompt-upgrade` section: is `enabled` true? Is the plugin installed (`dsh plugin --profile web list`) and `dsh web` restarted? Any apply error in the browser console?
 
 **"No model resolved for the enhancement"**
 Routing follows settings pair → session model → harness default; if all three are empty there is nothing to call. Pair `provider`/`model` in the settings, or send a message in the current session first so it carries a model route. Check the `agent-default-model` settings section.
@@ -226,7 +239,7 @@ src/
 ├── prompts.ts          built-in strategy system prompt + <raw_prompt> framing
 ├── enhancer.ts         the ctx.llm auxiliary call (route resolution, deadline
 │                       racing, finish validation, structured errors + host render)
-├── enhance-routes.ts   POST /prompt-enhance/enhance + /enhance-stream (loopback
+├── enhance-routes.ts   POST /prompt-upgrade/enhance + /enhance-stream (loopback
 │                       fence, body cap, admission gate)
 ├── enhance-command.ts  /enhance slash command (host command registry)
 ├── orchestrate.ts      shared route resolution + context assembly for both entries
@@ -299,7 +312,7 @@ Yes — it rides `ctx.llm`, so any provider the harness serves (DeepSeek officia
 
 After installing and restarting `dsh web`:
 
-1. Settings → 插件配置 shows the `prompt-enhance` section.
+1. Settings → 插件配置 shows the `prompt-upgrade` section.
 2. The ✨ button sits next to the send button; `Ctrl+Alt+E` triggers the same flow.
 3. Empty input → refusal panel; a valid draft → preview with model info; Apply fills back; Undo restores; Copy works.
 4. `/enhance <text>` renders a copyable result without touching model history.

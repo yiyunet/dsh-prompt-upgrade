@@ -3,7 +3,7 @@
  * the dsh-session-title-llm contract: paired route resolution, framed user
  * prompt, composed deadline + caller cancellation rechecked during and
  * after the stream, terminal-finish validation, output normalization.
- * @module dsh-prompt-enhance/enhancer
+ * @module dsh-prompt-upgrade/enhancer
  */
 
 import { BlockAssembler, createUserMessage } from '@deepseek-ai/dsh-llm'
@@ -25,7 +25,7 @@ import type { ReasoningEffortChoice } from './config'
  */
 declare module '@deepseek-ai/dsh-llm' {
   interface MessageSourceMap {
-    'prompt-enhance': { kind: 'prompt-enhance' }
+    'prompt-upgrade': { kind: 'prompt-upgrade' }
   }
 }
 
@@ -138,7 +138,7 @@ export async function enhanceText(llm: LlmStreamFace, options: EnhanceCallOption
     const messages = [
       createUserMessage({
         content: [{ type: 'text', text: frameUserPrompt(options.text, options.context) }],
-        source: { kind: 'prompt-enhance' },
+        source: { kind: 'prompt-upgrade' },
       }),
     ]
     /**
@@ -173,7 +173,7 @@ export async function enhanceText(llm: LlmStreamFace, options: EnhanceCallOption
       let onAbort: (() => void) | undefined
       const aborted = new Promise<never>((_, reject) => {
         onAbort = () => {
-          const error = new Error('prompt-enhance: aborted')
+          const error = new Error('prompt-upgrade: aborted')
           error.name = 'AbortError'
           reject(error)
         }

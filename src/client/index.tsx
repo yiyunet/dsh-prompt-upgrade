@@ -1,5 +1,5 @@
 /**
- * Browser half of the prompt-enhance plugin: registers the composer
+ * Browser half of the prompt-upgrade plugin: registers the composer
  * enhance button (conversation.input.right), the undo bar
  * (conversation.input.dock), the zh/en dictionaries, the settings mirror,
  * and the configurable global shortcut. Failure policy mirrors the
@@ -12,7 +12,7 @@
  * `@deepseek-ai/dsh-client-ui-slots` (which now only ships the contract
  * types), and a hard type import of the old home would tie this half to a
  * package the runtime no longer ships.
- * @module dsh-prompt-enhance/client
+ * @module dsh-prompt-upgrade/client
  */
 
 import type { Context as ClientContext } from '@deepseek-ai/cordis'
@@ -34,6 +34,11 @@ import { matchesShortcut, parseShortcut } from './shortcut'
 import { decodeClientSettings, getClientSettings, setClientSettings } from './settings'
 import { installClientSettingsSource } from './settings-source'
 import { PROMPT_ENHANCE_ROW_IDS } from '../shared/protocol'
+import { guardShell, SHELL_SLOT } from './anb-shell.mjs'
+import { PromptUpgradeForm } from './settings-form'
+import type { UpgradeSection } from './settings-form'
+import { PromptUpgradeSettings } from './PromptUpgradeSettings'
+import type { SettingsScope } from './settings-form'
 
 /** Locale namespace of the browser half. */
 export { NS }
@@ -42,6 +47,26 @@ export { NS }
 interface SlotsFace {
   inject(name: string, callback: () => unknown): unknown
   register(spec: { name: string; id: string; order?: number; locale?: string }, component: unknown): () => void
+}
+
+/**
+ * Structural face of the per-entry configuration forms service.
+ *
+ * Typed structurally rather than imported: `ctx.configForms` is reached through
+ * `ctx.inject`, and a hard type import would tie this half to a package a given
+ * profile may not bundle (the same reason every other service here is probed).
+ */
+interface ConfigFormsFace {
+  /** The shared form for one entry id, when the host serves it. */
+  get?: (entryId: string) => unknown
+  /**
+   * Run `register` while every named namespace is served, re-running it when the
+   * served set changes. Returns the disposer that unmounts the contribution.
+   */
+  whileServed?: (
+    namespaces: readonly string[],
+    register: (served: ReadonlySet<string>) => () => void,
+  ) => () => void
 }
 
 // No hard service dependencies. Every service this half touches (`configForms`
@@ -72,7 +97,7 @@ export const inject: string[] = []
  */
 function report(step: string, error: unknown): () => void {
   try {
-    console.warn(`[prompt-enhance] ${step} failed; that feature stays off.`, error)
+    console.warn(`[prompt-upgrade] ${step} failed; that feature stays off.`, error)
   } catch {
     // A throwing console (a proxied one, or a locked-down shell) must not turn
     // a degraded feature into a failed boot.
@@ -94,7 +119,7 @@ export function apply(ctx: ClientContext): void {
       } catch (error) {
         return report('dictionary registration', error)
       }
-    }, 'dsh-prompt-enhance: dictionaries')
+    }, 'dsh-prompt-upgrade: dictionaries')
   })
 
   // Baseline before anything optional mounts: the bundled mirror equals the
@@ -117,7 +142,7 @@ export function apply(ctx: ClientContext): void {
     return slots.inject('conversation.input.right', () => {
       try {
         return slots.register(
-          { name: 'conversation.input.right', id: 'prompt-enhance', order: 60, locale: NS },
+          { name: 'conversation.input.right', id: 'prompt-upgrade', order: 60, locale: NS },
           EnhanceButton as unknown as never,
         )
       } catch (error) {
@@ -132,7 +157,7 @@ export function apply(ctx: ClientContext): void {
     return slots.inject('conversation.input.dock', () => {
       try {
         return slots.register(
-          { name: 'conversation.input.dock', id: 'prompt-enhance-undo', order: 90, locale: NS },
+          { name: 'conversation.input.dock', id: 'prompt-upgrade-undo', order: 90, locale: NS },
           UndoBar as unknown as never,
         )
       } catch (error) {
@@ -162,5 +187,68 @@ export function apply(ctx: ClientContext): void {
     }
     document.addEventListener('keydown', onKeyDown, true)
     return () => document.removeEventListener('keydown', onKeyDown, true)
-  }, 'dsh-prompt-enhance: shortcut')
+  }, 'dsh-prompt-upgrade: shortcut')
+
+  // ── 设置面板：挂「ANB 工具」壳（N29 · 老板 2026-10-30 令）───────────────
+  // 面板注册进壳独占的 `anb.tool.tab`，由壳统一注册 `settings.section`（id
+  // `anb-toolbox`，order 16）——本插件**不**自注册 settings.section、也不自带
+  // 页面标题，设置里因此只有「ANB 工具」一个入口。
+  // `guardShell` 幂等：已有兄弟 ANB 插件登记壳就让位，那位被禁用后自动接管。
+  //
+  // namespace 取 `PROMPT_ENHANCE_ROW_IDS[0]`，两半共用同一份常量，宿主 section
+  // 与浏览器镜像不会解析到两个不同的文档。
+  ctx.inject(['slots', 'configForms'], (wired: ClientContext) => {
+    const face = wired as unknown as { slots?: SlotsFace; configForms?: ConfigFormsFace }
+    const slots = face.slots
+    const forms = face.configForms
+    if (slots === undefined || forms === undefined) return
+    if (typeof forms.get !== 'function' || typeof forms.whileServed !== 'function') return
+    const namespace = PROMPT_ENHANCE_ROW_IDS[0]
+    if (namespace === undefined) return
+    return ctx.effect(() => {
+      try {
+        guardShell(wired)
+      } catch (error) {
+        return report('anb tool shell', error)
+      }
+      // 命名空间被宿主暴露时才挂载：宿主不服务它时面板根本不出现，而不是渲染
+      // 一堆写不进去的控件。
+      const stopServing = forms.whileServed?.([namespace], () => {
+        const scope = forms.get?.(namespace) as SettingsScope<UpgradeSection> | undefined
+        if (scope === undefined) return () => {}
+        const form = new PromptUpgradeForm(scope)
+        const off = slots.inject(SHELL_SLOT, () => {
+          try {
+            return slots.register({
+              name: SHELL_SLOT,
+              id: 'anb.tool.prompt-upgrade',
+              order: 50,
+              locale: NS,
+              // 标签由壳渲染成一行 tab。与壳自己的固定标题（SHELL_TITLE）同策略，
+              // 这里给静态文案：locale 服务在本半是可选依赖，缺了也不该空一行。
+              label: () => '提示词升级',
+              inject: () => form.inject(),
+            } as never, PromptUpgradeSettings as unknown as never)
+          } catch (error) {
+            return report('settings panel slot', error)
+          }
+        }) as (() => void) | undefined
+        return () => {
+          try {
+            off?.()
+          } catch {
+            // slot registry already released this entry
+          }
+          form.dispose()
+        }
+      })
+      return () => {
+        try {
+          stopServing?.()
+        } catch {
+          // settings service already gone
+        }
+      }
+    }, 'dsh-prompt-upgrade: anb tool tab')
+  })
 }

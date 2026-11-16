@@ -3,7 +3,7 @@
  * and the /enhance slash command): route resolution by precedence, LLM
  * service lookup, one enhanceText call. Keeping both entries on this path
  * prevents their behavior from drifting.
- * @module dsh-prompt-enhance/orchestrate
+ * @module dsh-prompt-upgrade/orchestrate
  */
 
 import type { Context } from '@deepseek-ai/cordis'
@@ -260,11 +260,11 @@ export async function runEnhance(ctx: Context, config: Config, options: RunEnhan
       ...(options.onDelta !== undefined ? { onDelta: options.onDelta } : {}),
       ...(options.sessionId !== undefined ? { sessionId: options.sessionId } : {}),
     })
-    console.info(`[prompt-enhance] ${requestId} in=${countText(options.text)} out=${countText(result.text)} ctx=${context === undefined ? 0 : 1} ${result.elapsedMs}ms ok`)
+    console.info(`[prompt-upgrade] ${requestId} in=${countText(options.text)} out=${countText(result.text)} ctx=${context === undefined ? 0 : 1} ${result.elapsedMs}ms ok`)
     return result
   } catch (error) {
     const wire = toEnhanceError(error)
-    console.info(`[prompt-enhance] ${requestId} in=${countText(options.text)} error=${wire.code} ${Date.now() - started}ms`)
+    console.info(`[prompt-upgrade] ${requestId} in=${countText(options.text)} error=${wire.code} ${Date.now() - started}ms`)
     throw error
   }
 }
