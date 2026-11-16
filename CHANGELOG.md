@@ -2,6 +2,14 @@
 
 All notable changes are documented here. Versions follow [npm](https://www.npmjs.com/package/dsh-prompt-enhance); releases from **0.2.3** onward also have a [GitHub Release](https://github.com/rongxingda/dsh-prompt-enhance/releases) page with notes (0.2.0–0.2.2 are tagged but have no Release page — see this file for their notes).
 
+## 0.4.1 (2026-11-17)
+
+**Identical to 0.4.0 in code. The version is bumped only because 0.4.0 could not be made public.**
+
+npm's staged-publish flow accepted the 0.4.0 upload and then never finalised it: the version is absent from the packument (`dist-tags` still points at the `0.0.0-stage` placeholder and there is no `0.4.0` entry in the time map), it does not appear in `npm stage list` either, so there was nothing to approve, and every retry is refused with `E409 Cannot publish over previously staged version "0.4.0"`. Staged versions share the same semver uniqueness index as published ones, so the number is burnt. Bumping is the way out; the only difference between this tarball and the one built for 0.4.0 is this version string.
+
+No source, dependency, behaviour or settings change.
+
 ## 0.4.0 (2026-11-17)
 
 Fork of upstream `dsh-prompt-enhance` 0.3.4, renamed to `dsh-prompt-upgrade`, with the settings panel it never had.
