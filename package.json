@@ -1,7 +1,7 @@
 {
   "name": "dsh-prompt-upgrade",
   "description": "Prompt upgrade for the dsh web GUI: rewrite the composer draft into a well-structured prompt through the harness LLM service, preview the before/after, then fill back, copy, or undo. Ships its own settings panel inside the 「ANB 工具」 settings shell. Original draft is always preserved.",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "type": "module",
   "engines": {
     "node": "^22.19.0 || >=24.0.0"

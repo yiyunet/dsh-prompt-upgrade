@@ -2,6 +2,16 @@
 
 All notable changes are documented here. Versions follow [npm](https://www.npmjs.com/package/dsh-prompt-enhance); releases from **0.2.3** onward also have a [GitHub Release](https://github.com/rongxingda/dsh-prompt-enhance/releases) page with notes (0.2.0–0.2.2 are tagged but have no Release page — see this file for their notes).
 
+## 0.4.2 (2026-11-17)
+
+**Documentation and repository metadata only. No source, dependency or behaviour change.**
+
+- The Chinese README's install section pointed at a `link:` path on the maintainer's own machine. It now leads with the npm install (`dsh plugin --profile web add dsh-prompt-upgrade`), followed by the GitHub-main and local-clone alternatives.
+- Removed host-specific absolute paths and internal team references from the Chinese README (install, rollback, development, and shell-consistency sections). The shell-consistency note now describes the check generically instead of pointing at a script outside this repository.
+- Repository metadata: Chinese description, the npm package page as the homepage, and topics.
+
+Publishing now includes a redaction scan over the tracked tree (Windows absolute paths, internal host/team names, credential-shaped strings); it reports 0 hits.
+
 ## 0.4.1 (2026-11-17)
 
 **Identical to 0.4.0 in code. The version is bumped only because 0.4.0 could not be made public.**

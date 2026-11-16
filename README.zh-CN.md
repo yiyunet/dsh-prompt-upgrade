@@ -2,7 +2,7 @@
 
 把输入框里随手写下的一句话，一键重写成结构清晰、可直接执行的提示词：**先预览、再回填、随时撤销**，原草稿永不被动修改。
 
-> **这不是官方插件。** 本仓库 fork 自 [`rongxingda/dsh-prompt-enhance`](https://github.com/rongxingda/dsh-prompt-enhance) v0.3.4（Apache-2.0），由技术部改造并改名为 `dsh-prompt-upgrade`，主要变化是**补上了上游缺失的设置面板**（上游 0.3.x 的设置只存在于 schema 里，DSH 0.2.x 移除「设置 → 插件配置」页后没有任何界面渲染它）。
+> **这不是官方插件。** 本仓库 fork 自 [`rongxingda/dsh-prompt-enhance`](https://github.com/rongxingda/dsh-prompt-enhance) v0.3.4（Apache-2.0），本次 fork 改名为 `dsh-prompt-upgrade`，主要变化是**补上了上游缺失的设置面板**（上游 0.3.x 的设置只存在于 schema 里，DSH 0.2.x 移除「设置 → 插件配置」页后没有任何界面渲染它）。
 > 需要向 DSH 官方反馈问题时，请回到上游仓库；本仓库的问题属于本改造。
 
 ---
@@ -19,8 +19,23 @@
 
 ## 安装
 
+从 npm 安装（推荐）：
+
 ```powershell
-dsh plugin --profile web add link:"D:\Users\yiyunet\Documents\DSH\EcomOffice\哪吒\dsh-prompt-upgrade"
+dsh plugin --profile web add dsh-prompt-upgrade
+```
+
+跟随 GitHub 主干（未发版的最新提交）：
+
+```powershell
+dsh plugin --profile web add github:yiyunet/dsh-prompt-upgrade
+```
+
+从本地克隆链接（改插件时用，路径按你自己的来）：
+
+```powershell
+git clone https://github.com/yiyunet/dsh-prompt-upgrade.git
+dsh plugin --profile web add link:./dsh-prompt-upgrade
 ```
 
 装完**刷新一次浏览器页面**。客户端半边（按钮/面板）随页面加载，宿主半边（路由/命令）随 `dsh web` 进程加载。
@@ -41,7 +56,7 @@ dsh plugin --profile web add link:"D:\Users\yiyunet\Documents\DSH\EcomOffice\哪
 
 **设置 → ANB 工具 → 提示词升级**。
 
-面板挂在部门统一的「ANB 工具」壳里（不是自己开一个设置导航项），所以设置里只有「ANB 工具」一个入口，里面按插件分成一行行标签。这条规则见部门知识节点 N29。
+面板挂在「ANB 工具」壳里（不是自己开一个设置导航项），所以设置里只有「ANB 工具」一个入口，里面按插件分成一行行标签。多个插件共用同一个壳，任一在场即显示。
 
 面板里改完点**保存**才写入；没保存就切走，草稿自动丢弃。
 
@@ -110,10 +125,10 @@ dsh plugin --profile web add link:"D:\Users\yiyunet\Documents\DSH\EcomOffice\哪
 dsh plugin --profile web remove dsh-prompt-upgrade
 ```
 
-设置文档留在本地（重新装回来还在）。若要把仓库改动整体退回上游原状：
+设置文档留在本地（重新装回来还在）。若要把工作区改动整体退回上游原状（在仓库目录内执行）：
 
 ```powershell
-git -C "D:\Users\yiyunet\Documents\DSH\EcomOffice\哪吒\dsh-prompt-upgrade" checkout -- .
+git checkout -- .
 ```
 
 ---
@@ -134,20 +149,19 @@ git -C "D:\Users\yiyunet\Documents\DSH\EcomOffice\哪吒\dsh-prompt-upgrade" che
 ## 开发
 
 ```powershell
-cd "D:\Users\yiyunet\Documents\DSH\EcomOffice\哪吒\dsh-prompt-upgrade"
+git clone https://github.com/yiyunet/dsh-prompt-upgrade.git
+cd dsh-prompt-upgrade
 npm ci
 npm run typecheck
 npm test        # 270 个用例
 npm run build   # lib/index.js（宿主）+ lib/client.js（浏览器）
 ```
 
-**改动前必跑的门禁**（部门规则 N29：设置里只留一个入口）：
+**改动前请检查壳块一致性**：面板挂在多个插件共用的「ANB 工具」壳里，而壳块在 `src/client/anb-shell.mjs` 中是**逐字节内联**的。同一块壳在多个插件里必须完全一致，否则会出现「壳闪一下又消失」「侧栏两个 ANB 工具」「标签行出不来」这类运行时症状，且很难归因。
 
-```powershell
-node "D:\Users\yiyunet\Documents\DSH\EcomOffice\哪吒\tools\check-anb-shell.mjs"
-```
+检查方法是把 `// >>> ANB-SHELL:BEGIN v2` 与 `// <<< ANB-SHELL:END v2` 之间的内容，与同族插件逐行比对（剥离公共缩进后），两件事都要看：① 壳块是否逐字相同；② 有客户端半边的插件是否漏挂了壳。
 
-它做两件事：① 已挂壳的包，壳块是否**逐字节一致**；② 有客户端半边的包是否**忘了挂壳**。两项都绿才算过。
+该比对脚本属于发布方的内部工具，不随本包分发。
 
 ### 代码地图
 
